@@ -491,6 +491,40 @@ namespace PluginCore.PluginCore.Utilities
     }
 
     /// <summary>
+    /// Recolors a monochrome image with alpha transparency to a new color.
+    /// Only the Alpha channel of the image will be considered and it will
+    /// map to the new color with the same alpha value.
+    /// </summary>
+    public unsafe class RecolorQuantizer : Quantizer
+    {
+        Color _newColor;
+
+
+        /// <summary>
+        /// Contruct the Recolor Quantizer
+        /// </summary>
+        /// <param name="newColor">The new color for this image.</param>
+        public RecolorQuantizer(Color newColor)
+            : base(true)
+        {
+            _newColor = newColor;
+        }
+
+        protected override byte QuantizePixel(Color32* pixel)
+        {
+            return pixel->Alpha;
+        }
+
+        protected override ColorPalette GetPalette(ColorPalette original)
+        {
+            for (int index = 0; index < 256; index++)
+                original.Entries[index] = Color.FromArgb(index, _newColor);
+
+            return original;
+        }
+    }
+
+    /// <summary>
     /// Summary description for Class1.
     /// </summary>
     public unsafe abstract class Quantizer

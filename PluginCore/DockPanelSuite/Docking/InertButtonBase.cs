@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Imaging;
 using PluginCore.DockPanelSuite;
+using PluginCore.PluginCore.Utilities;
 
 namespace WeifenLuo.WinFormsUI.Docking
 {
@@ -73,28 +74,16 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
             }
 
-            using (ImageAttributes imageAttributes = new ImageAttributes())
-            {
-                ColorMatrix invertMatrix = new ColorMatrix(
-                    new float[][]
-                   {
-                      new float[] {-1, 0, 0, 0, 0},
-                      new float[] {0, -1, 0, 0, 0},
-                      new float[] {0, 0, -1, 0, 0},
-                      new float[] {0, 0, 0, 1, 0},
-                      new float[] {1, 1, 1, 0, 1}
-                   });
-                imageAttributes.SetColorMatrix(invertMatrix);
+            var quantizer = new RecolorQuantizer(ForeColor);
+            var recoloredImage = quantizer.Quantize(Image);
 
-                e.Graphics.DrawImage(
-                   Image,
-                   new Rectangle(0, 0, Image.Width, Image.Height),
-                   0, 0,
-                   Image.Width,
-                   Image.Height,
-                   GraphicsUnit.Pixel,
-                   imageAttributes);
-            }
+            e.Graphics.DrawImage(
+                recoloredImage,
+                new Rectangle(0, 0, Image.Width, Image.Height),
+                0, 0,
+                Image.Width,
+                Image.Height,
+                GraphicsUnit.Pixel);
 
             base.OnPaint(e);
         }
