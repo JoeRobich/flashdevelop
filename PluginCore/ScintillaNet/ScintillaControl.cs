@@ -5193,6 +5193,7 @@ namespace ScintillaNet
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_SYSKEYDOWN = 0x0104;
         private const int WM_DROPFILES = 0x0233;
+        private const int WM_MOUSELEAVE = 0x02A3;
         private const uint WS_CHILD = (uint)0x40000000L;
         private const uint WS_VISIBLE = (uint)0x10000000L;
         private const uint WS_TABSTOP = (uint)0x00010000L;
@@ -5346,6 +5347,10 @@ namespace ScintillaNet
                             else if ((code == 9) || (code == 33) || (code == 34)) // Transmit Ctrl with Tab, PageUp/PageDown
                             {
                                 return base.PreProcessMessage(ref m);
+                            }
+                            else if (code == (int)Keys.ControlKey)
+                            {
+                                ResetMouseDwell();
                             }
                         }
                         break;
@@ -5884,6 +5889,15 @@ namespace ScintillaNet
         #endregion
 
         #region Misc Custom Stuff
+
+        /// <summary>
+        /// Simulate the mouse leaving the Editor then returning to its current location.
+        /// </summary>
+        private void ResetMouseDwell()
+        {
+            SPerform(WM_MOUSELEAVE, 0, 0);
+            Cursor.Position = Cursor.Position;
+        }
 
         /// <summary>
         /// Gets the amount of lines visible (ie. not folded)
